@@ -1,0 +1,14 @@
+# raw statement files and parsed transactions
+data/statements/
+data/transactions/
+
+# generated reports
+reports/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
