@@ -1,0 +1,2 @@
+data_dir: /Users/prestondonovan/Documents/budget_data
+month_pattern: '^\d{4}-\d{2}$'
