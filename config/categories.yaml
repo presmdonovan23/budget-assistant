@@ -1,0 +1,27 @@
+- category: groceries
+  keywords:
+    - shaws
+
+- category: restaurants
+  keywords:
+    - sweetgreen
+
+- category: transportation
+  keywords:
+    - mbta
+
+- category: utilities
+  keywords:
+    - xfinity
+    - eversource
+
+- category: subscriptions
+  keywords:
+    - spotify
+    - amazon prime
+    - peacock
+    - blizzard
+
+- category: shopping
+  keywords:
+    - amazon

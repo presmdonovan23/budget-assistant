@@ -1,0 +1,27 @@
+high_dollar_threshold: 300.00
+
+category_thresholds:
+  shopping: 400.00
+  subscriptions: 75.00
+  utilities: 250.00
+
+subscription:
+  tracked_merchants:
+    - spotify
+    - amazon prime
+    - peacock
+    - xfinity
+    - blizzard
+  tolerance_amount: 1.00
+  min_history_months: 2
+
+new_merchant:
+  enabled: true
+  ignore_merchants: []
+
+reporting:
+  tracked_expenses:
+    - groceries
+    - utilities
+    - subscriptions
+    - transportation
