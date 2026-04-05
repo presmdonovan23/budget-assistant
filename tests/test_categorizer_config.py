@@ -12,7 +12,7 @@ def categories_from_config():
     with open("config/categories.yaml", "r") as f:
         return yaml.safe_load(f)
 
-
+# these tests are really just validating the categorize_merchant works. consider removing in the future because they are testing the function rather than the config. but they do ensure the config is correct and that the expected merchants are categorized as expected, so they do have value.
 def categorize_merchant(merchant: str, categories_config: list) -> str:
     """
     Simple categorizer: match merchant against keywords in order.
