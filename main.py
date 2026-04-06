@@ -16,6 +16,9 @@ if __name__ == "__main__":
     # ]
     # save_month("2026-03", transactions)
 
-# call bofa.main() to test the parser
-    import budget_assistant.parsers.bofa as bofa
-    bofa.main()
+    # # call bofa.main() to test the parser
+    # import budget_assistant.parsers.bofa as bofa
+    # bofa.main()
+
+    import budget_assistant.parsers.amex as amex
+    amex.main()
