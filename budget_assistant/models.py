@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field, asdict
 from datetime import date
 from decimal import Decimal, InvalidOperation
+import re
 from typing import Optional
 import json
 
@@ -16,10 +17,15 @@ class Transaction:
 
     def __post_init__(self):
         if isinstance(self.date, str):
+            # Attempt to parse date string in ISO format (YYYY-MM-DD).
             try:
                 self.date = date.fromisoformat(self.date)
+            # If ISO format parsing fails, attempt to parse MM/DD/YY format.
             except ValueError as exc:
-                raise ValueError("date must be ISO format YYYY-MM-DD") from exc
+                try:
+                    self.date = self.format_MMDDYY(self.date)
+                except ValueError as exc2:
+                    raise ValueError("date must be ISO format YYYY-MM-DD or MM/DD/YY") from exc2
         elif not isinstance(self.date, date):
             raise TypeError("date must be a datetime.date or ISO date string")
 
@@ -40,6 +46,12 @@ class Transaction:
                 raise TypeError("category must be a string or None")
             if not self.category.strip():
                 raise ValueError("category must be non-empty when provided")
+            
+    def format_MMDDYY(self, date_str: str) -> str:
+        date_pattern = r"^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/(\d{2}).*$"  # MM/DD/YY format
+        MM, DD, YY = re.match(date_pattern, date_str).groups()
+        return date(2000 + int(YY), int(MM), int(DD)).isoformat()
+    
 
 @dataclass
 class MonthlyTransactions:
