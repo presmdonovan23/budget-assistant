@@ -19,7 +19,6 @@ class BofaParser(Parser):
     
     def __init__(self, file_path: str, account_id: str):
         super().__init__(file_path, account_id)
-        self.in_checks_section = False
         self.transaction_pattern = '(\\d{2}/\\d{2}/\\d{2})\\s+(.+?)(-?(?:\\d{1,3}(?:,\\d{3})+|\\d+)\\.\\d{2})'
         self.missing_transactions = False
         self.text = ""
@@ -28,6 +27,7 @@ class BofaParser(Parser):
         
         logger.info(f"Parsing Bank of America statement from file {self.file_path} for account {self.account_id}")
         self.cursor = 0
+        self.missing_transactions = False
 
         reader = PdfReader(self.file_path)
         self.text = ''.join([page.extract_text().replace('\n', ' ') for page in reader.pages])
@@ -36,7 +36,8 @@ class BofaParser(Parser):
         withdrawals = self.get_withdrawals()
         checks = self.get_checks()
 
-        # run this global search for transactions as a backup if we fail to identify the sections
+        # run this global search for transactions as a backup if we fail to identify the sections. backup 
+        # method does not categorize transactions as deposits, withdrawals, or checks.
         if self.missing_transactions:
             transactions = self.get_transactions_backup()
             logger.info(f"Finished parsing Bank of America statement. Found {len(transactions)} transactions using backup method.")
@@ -78,7 +79,7 @@ class BofaParser(Parser):
                 deposit_amount = Decimal(transaction_amount.replace(',', ''))
                 transaction = Transaction(
                     date=transaction_date,
-                    description=description,
+                    description=f"Deposit: {description}",
                     merchant="unknown",
                     amount=deposit_amount,
                     account=self.account_id,
@@ -113,7 +114,7 @@ class BofaParser(Parser):
                 
                 transaction = Transaction(
                     date=transaction_date,
-                    description=description,
+                    description=f"Withdrawal: {description}",
                     merchant="unknown",
                     amount=withdrawal_amount,
                     account=self.account_id,
@@ -147,7 +148,7 @@ class BofaParser(Parser):
                 check_amount = Decimal(transaction_amount.replace(',', ''))
                 transaction = Transaction(
                     date=transaction_date,
-                    description=description,
+                    description=f"Check: {description}",
                     merchant="unknown",
                     amount=check_amount,
                     account=self.account_id,
