@@ -47,10 +47,10 @@ class Transaction:
             if not self.category.strip():
                 raise ValueError("category must be non-empty when provided")
             
-    def format_MMDDYY(self, date_str: str) -> str:
+    def format_MMDDYY(self, date_str: str) -> date:
         date_pattern = r"^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/(\d{2}).*$"  # MM/DD/YY format
         MM, DD, YY = re.match(date_pattern, date_str).groups()
-        return date(2000 + int(YY), int(MM), int(DD)).isoformat()
+        return date(2000 + int(YY), int(MM), int(DD))
     
 
 @dataclass

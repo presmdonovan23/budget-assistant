@@ -20,5 +20,9 @@ if __name__ == "__main__":
     # import budget_assistant.parsers.bofa as bofa
     # bofa.main()
 
-    import budget_assistant.parsers.amex as amex
-    amex.main()
+    # import budget_assistant.parsers.amex as amex
+    # amex.main()
+
+    # Test Chase parser
+    import budget_assistant.parsers.chase as chase
+    chase.main()

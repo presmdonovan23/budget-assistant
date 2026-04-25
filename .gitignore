@@ -2,6 +2,9 @@
 data/statements/
 data/transactions/
 
+# test statement files (not committed to git)
+tests/test_data/statements/
+
 # generated reports
 reports/
 

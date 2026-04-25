@@ -94,3 +94,21 @@ All rules live in `config/` and are tailored for personal use rather than design
 
 - **`categories.yaml`** — ordered list of keyword → category mappings. Matching is case-insensitive substring; first match wins.
 - **`rules.yaml`** — anomaly thresholds (e.g. high-dollar cutoff), tracked subscription merchants, and other per-expense configuration.
+
+## Testing
+
+The test suite requires sample statement files that are not included in the repository for privacy reasons. To run the full test suite:
+
+1. Obtain sample PDF statements for each supported parser (Chase, BofA, Amex, PayPal)
+2. Place them in `tests/test_data/statements/` (create subdirectories as needed for different parsers)
+3. Update test files to reference your specific sample files
+
+Without these statement files, unit tests that validate PDF parsing will fail. The test data directory is gitignored to prevent accidental inclusion of sensitive financial documents.
+
+```bash
+# Run tests (will fail without test statement files)
+python -m pytest tests/
+
+# Run integration test with sample statements
+python test_chase.py
+```
