@@ -1,9 +1,19 @@
 from dataclasses import dataclass, field, asdict
 from datetime import date
 from decimal import Decimal, InvalidOperation
+from enum import Enum
 import re
 from typing import Optional
 import json
+
+
+class Category(Enum):
+    MORTGAGE = "Mortgage"
+    UTILITY = "Utility"
+    HOUSE_MAINTENANCE = "House Maintenance"
+    SUBSCRIPTION = "Subscription"
+    OTHER = "Other"
+
 
 @dataclass
 class Transaction:
@@ -13,7 +23,8 @@ class Transaction:
     amount: Decimal
     account: str
     source_file: str
-    category: Optional[str] = field(default=None)
+    category: Optional[Category] = field(default=None)
+
 
     def __post_init__(self):
         if isinstance(self.date, str):
@@ -42,10 +53,8 @@ class Transaction:
                 raise ValueError(f"{field_name} must be a non-empty string")
 
         if self.category is not None:
-            if not isinstance(self.category, str):
-                raise TypeError("category must be a string or None")
-            if not self.category.strip():
-                raise ValueError("category must be non-empty when provided")
+            if not isinstance(self.category, Category):
+                raise TypeError("category must be a Category enum value or None")
             
     def format_MMDDYY(self, date_str: str) -> date:
         date_pattern = r"^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/(\d{2}).*$"  # MM/DD/YY format
@@ -70,10 +79,21 @@ class TransactionEncoder(json.JSONEncoder):
             return str(obj)          # "12.34" — preserves precision
         if isinstance(obj, date):
             return obj.isoformat()   # "2026-03-15"
+        if isinstance(obj, Category):
+            return obj.value         # Convert enum to string value
         return super().default(obj)
     
 
 def transaction_from_dict(d: dict) -> Transaction:
+    category_value = d.get("category")
+    if category_value is not None and isinstance(category_value, str):
+        # Convert string category to enum
+        try:
+            category_value = Category(category_value)
+        except ValueError:
+            # If string doesn't match any enum value, default to OTHER
+            category_value = Category.OTHER
+    
     return Transaction(
         date=date.fromisoformat(d["date"]),
         description=d["description"],
@@ -81,5 +101,5 @@ def transaction_from_dict(d: dict) -> Transaction:
         amount=Decimal(d["amount"]),   # from the string "12.34"
         account=d["account"],
         source_file=d["source_file"],
-        category=d.get("category"),
+        category=category_value,
     )

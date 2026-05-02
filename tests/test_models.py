@@ -1,7 +1,7 @@
 """
 This is a suite of unit tests for budget_assistant/models.py. It uses pytest as the testing framework.
 """
-from budget_assistant.models import MonthlyTransactions, Transaction, TransactionEncoder, transaction_from_dict
+from budget_assistant.models import Category, MonthlyTransactions, Transaction, TransactionEncoder, transaction_from_dict
 from datetime import date
 from decimal import Decimal
 from dataclasses import asdict
@@ -18,7 +18,7 @@ def test_transaction_creation():
         amount=Decimal("123.45"),
         account="Checking",
         source_file="transactions.csv",
-        category="Groceries"
+        category=Category.OTHER
     )
 
     assert t.date == date(2026, 3, 15)
@@ -27,7 +27,7 @@ def test_transaction_creation():
     assert t.amount == Decimal("123.45")
     assert t.account == "Checking"
     assert t.source_file == "transactions.csv"
-    assert t.category == "Groceries"
+    assert t.category == Category.OTHER
 
 def test_transaction_creation_without_date():
     with pytest.raises(TypeError):
@@ -61,7 +61,7 @@ def test_transaction_creation_with_invalid_amount():
             amount="not a number",  # Invalid amount
             account="Checking",
             source_file="transactions.csv",
-            category="Groceries"
+            category=Category.OTHER
         )
 
 def test_transaction_creation_with_string_amount_coerces_to_decimal():
@@ -72,7 +72,7 @@ def test_transaction_creation_with_string_amount_coerces_to_decimal():
         amount="123.45",
         account="Checking",
         source_file="transactions.csv",
-        category="Groceries"
+        category=Category.OTHER
     )
 
     assert t.amount == Decimal("123.45")
@@ -85,7 +85,7 @@ def test_transaction_creation_with_iso_date_string_coerces_to_date():
         amount=Decimal("123.45"),
         account="Checking",
         source_file="transactions.csv",
-        category="Groceries"
+        category=Category.OTHER
     )
 
     assert t.date == date(2026, 3, 15)
@@ -98,7 +98,7 @@ def test_monthly_transactions_creation():
         amount=Decimal("123.45"),
         account="Checking",
         source_file="transactions.csv",
-        category="Groceries"
+        category=Category.OTHER
     )
     t2 = Transaction(
         date=date(2026, 3, 20),
@@ -107,7 +107,7 @@ def test_monthly_transactions_creation():
         amount=Decimal("45.67"),
         account="Credit Card",
         source_file="transactions.csv",
-        category="Transportation"
+        category=Category.UTILITY
     )
 
     mt = MonthlyTransactions(
@@ -129,7 +129,7 @@ def test_transaction_encoder():
         amount=Decimal("123.45"),
         account="Checking",
         source_file="transactions.csv",
-        category="Groceries"
+        category=Category.OTHER
     )
 
     json_str = json.dumps(asdict(t), cls=TransactionEncoder)
@@ -146,7 +146,7 @@ def test_transaction_from_dict():
         "amount": "123.45",
         "account": "Checking",
         "source_file": "transactions.csv",
-        "category": "Groceries"
+        "category": "Other"
     }
     t = transaction_from_dict(d)
     assert t.date == date(2026, 3, 15)
@@ -155,4 +155,4 @@ def test_transaction_from_dict():
     assert t.amount == Decimal("123.45")
     assert t.account == "Checking"
     assert t.source_file == "transactions.csv"
-    assert t.category == "Groceries"
+    assert t.category == Category.OTHER
