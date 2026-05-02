@@ -123,7 +123,7 @@ class BofaParser(Parser):
                 withdrawals.append(transaction)
 
                 total_withdrawals_found += withdrawal_amount
-            if total_withdrawals_found != (total_withdrawals + 1):
+            if total_withdrawals_found != total_withdrawals:
                 self.missing_transactions = True
                 logger.warning(f"Total withdrawals found in transactions (${total_withdrawals_found}) does not match total withdrawals reported on statement (${total_withdrawals}). This may indicate that some transactions were not parsed correctly.")
             self.cursor = withdrawals_end
