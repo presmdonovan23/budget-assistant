@@ -13,6 +13,8 @@ subscription:
     - xfinity
     - blizzard
     - la fitness
+  tolerance_amount: 5.00
+  min_history_months: 3
 
 new_merchant:
   enabled: true
