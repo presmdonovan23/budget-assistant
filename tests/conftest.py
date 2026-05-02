@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from budget_assistant.models import Transaction
+from budget_assistant.models import Category, Transaction
 
 @pytest.fixture
 def sample_transaction_march_1():
@@ -15,7 +15,7 @@ def sample_transaction_march_1():
         amount=Decimal("123.45"),
         account="bofa-checking",
         source_file="statement.pdf",
-        category="groceries"
+        category=Category.OTHER
     )
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def sample_transaction_march_2():
         amount=Decimal("4.56"),
         account="bofa-checking",
         source_file="statement.pdf",
-        category="coffee"
+        category=Category.OTHER
     )
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def sample_transaction_march_3():
         amount=Decimal("78.90"),
         account="bofa-checking",
         source_file="statement.pdf",
-        category="shopping"
+        category=Category.OTHER
     )
 
 @pytest.fixture
@@ -51,7 +51,7 @@ def sample_transaction_april_1():
         amount=Decimal("15.00"),
         account="bofa-checking",
         source_file="statement.pdf",
-        category="transportation"
+        category=Category.OTHER
     )
 
 @pytest.fixture
@@ -63,7 +63,7 @@ def sample_transaction_april_2():
         amount=Decimal("20.00"),
         account="bofa-checking",
         source_file="statement.pdf",
-        category="transportation"
+        category=Category.OTHER
     )
 
 @pytest.fixture
