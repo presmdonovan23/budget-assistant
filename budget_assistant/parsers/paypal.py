@@ -5,7 +5,7 @@ from typing import List
 
 import pdfplumber
 
-from budget_assistant.models import Transaction
+from budget_assistant.models import Category, Transaction
 from budget_assistant.parsers.base import Parser
 
 logger = logging.getLogger(__name__)
@@ -105,6 +105,7 @@ class PayPalParser(Parser):
                     amount=amount,
                     account=self.account_id,
                     source_file=self.file_path,
+                    category=Category.PAYMENT if "AUTOMATIC PAYMENT" in description.upper() else Category.OTHER,
                 )
                 current = transaction
             elif current:

@@ -6,7 +6,7 @@ import logging
 import re
 from typing import List
 
-from budget_assistant.models import Transaction
+from budget_assistant.models import Category, Transaction
 from budget_assistant.parsers.base import Parser
 import pdfplumber
 
@@ -98,7 +98,8 @@ class ChaseParser(Parser):
                     merchant="unknown",
                     amount=amount,
                     account=self.account_id,
-                    source_file=self.file_path
+                    source_file=self.file_path,
+                    category=Category.OTHER,
                 )
                 purchases.append(transaction)
             except Exception as e:
@@ -146,7 +147,8 @@ class ChaseParser(Parser):
                     merchant="unknown",
                     amount=amount,
                     account=self.account_id,
-                    source_file=self.file_path
+                    source_file=self.file_path,
+                    category=Category.PAYMENT if "AUTOMATIC PAYMENT" in description.upper() else Category.OTHER,
                 )
                 transactions.append(transaction)
             except Exception as e:

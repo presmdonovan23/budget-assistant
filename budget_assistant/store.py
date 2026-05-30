@@ -6,6 +6,7 @@ from typing import Optional
 from dataclasses import asdict, dataclass
 
 from budget_assistant.models import (
+    Category,
     MonthlyTransactions,
     Transaction,
     TransactionEncoder,
@@ -78,7 +79,7 @@ if __name__ == "__main__":
             amount="123.45",
             account="bofa-checking",
             source_file="statement.pdf",
-            category="groceries"
+            category=Category.OTHER,
         )
     ]
     save_month("2026-03", transactions)

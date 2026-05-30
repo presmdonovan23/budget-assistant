@@ -1,9 +1,8 @@
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 import re
-from typing import Optional
 import json
 
 
@@ -12,6 +11,8 @@ class Category(Enum):
     UTILITY = "Utility"
     HOUSE_MAINTENANCE = "House Maintenance"
     SUBSCRIPTION = "Subscription"
+    PAYMENT = "Payment"
+    CREDIT_CARD_PAYMENT = "Credit Card Payment"
     OTHER = "Other"
 
 
@@ -23,7 +24,7 @@ class Transaction:
     amount: Decimal
     account: str
     source_file: str
-    category: Optional[Category] = field(default=None)
+    category: Category
 
 
     def __post_init__(self):
@@ -52,10 +53,8 @@ class Transaction:
             if not value.strip():
                 raise ValueError(f"{field_name} must be a non-empty string")
 
-        if self.category is not None:
-            if not isinstance(self.category, Category):
-                raise TypeError("category must be a Category enum value or None")
-            
+        if not isinstance(self.category, Category):
+            raise TypeError("category must be a Category enum value")
     def format_MMDDYY(self, date_str: str) -> date:
         date_pattern = r"^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/(\d{2}).*$"  # MM/DD/YY format
         MM, DD, YY = re.match(date_pattern, date_str).groups()
@@ -86,7 +85,9 @@ class TransactionEncoder(json.JSONEncoder):
 
 def transaction_from_dict(d: dict) -> Transaction:
     category_value = d.get("category")
-    if category_value is not None and isinstance(category_value, str):
+    if category_value is None:
+        category_value = Category.OTHER
+    elif isinstance(category_value, str):
         # Convert string category to enum
         try:
             category_value = Category(category_value)

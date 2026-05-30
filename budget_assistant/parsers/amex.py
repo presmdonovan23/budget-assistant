@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import List, Tuple
 
 from budget_assistant.parsers.base import Parser
-from budget_assistant.models import Transaction
+from budget_assistant.models import Category, Transaction
 
 
 class AmexParser(Parser):
@@ -26,7 +26,7 @@ class AmexParser(Parser):
                 amount = Decimal(amount_str)
 
                 extended_details = (row.get("Extended Details") or "").strip()
-                category = (row.get("Category") or "").strip()
+                category = Category.CREDIT_CARD_PAYMENT if description.upper() == "PAYMENT" else Category.OTHER
 
                 transactions.append(
                     Transaction(
@@ -36,6 +36,7 @@ class AmexParser(Parser):
                         amount=amount,
                         account=self.account_id,
                         source_file=self.file_path,
+                        category=category,
                     )
                 )
 

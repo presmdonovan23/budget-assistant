@@ -40,17 +40,16 @@ def test_transaction_creation_without_date():
             category="Groceries"
         )
 
-def test_transaction_creation_without_category():
-    t = Transaction(
-        date=date(2026, 3, 15),
-        description="Grocery shopping",
-        merchant="Supermarket",
-        amount=Decimal("123.45"),
-        account="Checking",
-        source_file="transactions.csv"
-    )
-
-    assert t.category is None
+def test_transaction_creation_without_category_raises_error():
+    with pytest.raises(TypeError):
+        Transaction(
+            date=date(2026, 3, 15),
+            description="Grocery shopping",
+            merchant="Supermarket",
+            amount=Decimal("123.45"),
+            account="Checking",
+            source_file="transactions.csv"
+        )
 
 def test_transaction_creation_with_invalid_amount():
     with pytest.raises(TypeError):
@@ -155,4 +154,17 @@ def test_transaction_from_dict():
     assert t.amount == Decimal("123.45")
     assert t.account == "Checking"
     assert t.source_file == "transactions.csv"
+    assert t.category == Category.OTHER
+
+
+def test_transaction_from_dict_defaults_missing_category_to_other():
+    d = {
+        "date": "2026-03-15",
+        "description": "Grocery shopping",
+        "merchant": "Supermarket",
+        "amount": "123.45",
+        "account": "Checking",
+        "source_file": "transactions.csv",
+    }
+    t = transaction_from_dict(d)
     assert t.category == Category.OTHER

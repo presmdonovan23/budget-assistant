@@ -8,7 +8,7 @@ from pydoc import text
 import re
 from typing import List
 
-from budget_assistant.models import Transaction
+from budget_assistant.models import Category, Transaction
 from budget_assistant.parsers.base import Parser
 from PyPDF2 import PdfReader
 
@@ -58,10 +58,19 @@ class BofaParser(Parser):
                 merchant="unknown",
                 amount=transaction_amount_decimal,
                 account=self.account_id,
-                source_file=self.file_path
+                source_file=self.file_path,
+                category=self._classify_bofa_category(description),
             )
             transactions.append(transaction)
         return transactions
+
+    def _classify_bofa_category(self, description: str) -> Category:
+        normalized = description.upper()
+        if "JPMORGAN CHASE" in normalized and "ID:1000008113" in normalized:
+            return Category.MORTGAGE
+        if "EVERSOURCE" in normalized:
+            return Category.UTILITY
+        return Category.OTHER
 
     def get_deposits(self) -> List[Transaction]:
         deposits = []
@@ -77,13 +86,15 @@ class BofaParser(Parser):
             total_deposits_found = 0
             for transaction_date, description, transaction_amount in deposit_tuples:
                 deposit_amount = Decimal(transaction_amount.replace(',', ''))
+                deposit_description = f"Deposit: {description}"
                 transaction = Transaction(
                     date=transaction_date,
-                    description=f"Deposit: {description}",
+                    description=deposit_description,
                     merchant="unknown",
                     amount=deposit_amount,
                     account=self.account_id,
-                    source_file=self.file_path
+                    source_file=self.file_path,
+                    category=self._classify_bofa_category(deposit_description),
                 )
                 deposits.append(transaction)
 
@@ -112,13 +123,15 @@ class BofaParser(Parser):
             for transaction_date, description, transaction_amount in withdrawal_tuples:
                 withdrawal_amount = Decimal(transaction_amount.replace(',', ''))
                 
+                withdrawal_description = f"Withdrawal: {description}"
                 transaction = Transaction(
                     date=transaction_date,
-                    description=f"Withdrawal: {description}",
+                    description=withdrawal_description,
                     merchant="unknown",
                     amount=withdrawal_amount,
                     account=self.account_id,
-                    source_file=self.file_path
+                    source_file=self.file_path,
+                    category=self._classify_bofa_category(withdrawal_description),
                 )
                 withdrawals.append(transaction)
 
@@ -146,13 +159,15 @@ class BofaParser(Parser):
             total_checks_found = 0
             for transaction_date, description, transaction_amount in check_tuples:
                 check_amount = Decimal(transaction_amount.replace(',', ''))
+                check_description = f"Check: {description}"
                 transaction = Transaction(
                     date=transaction_date,
-                    description=f"Check: {description}",
+                    description=check_description,
                     merchant="unknown",
                     amount=check_amount,
                     account=self.account_id,
-                    source_file=self.file_path
+                    source_file=self.file_path,
+                    category=self._classify_bofa_category(check_description),
                 )
                 checks.append(transaction)
 
